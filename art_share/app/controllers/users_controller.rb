@@ -27,16 +27,19 @@ class UsersController < ApplicationController
     end
 
     def update
-        @user = User.update(params[:id], user_params)
+        @user = User.find_by(id: params[:id])
+
         if @user
+            @user.update_attributes(user_params)
             render json: @user, status: 200
         else
-            render json: "Error not found", status: 404
+            render json: @user.errors.full_messages, status: 418
         end
     end
 
     def destroy
-        @user = User.delete(params[:id])
+        @user = User.find_by(id: params[:id])
+        @user.destroy
 
         if @user
             render plain: "USER WAS ERADICATED!", status: 200
@@ -48,6 +51,6 @@ class UsersController < ApplicationController
     private
 
     def user_params
-        params.require(:user).permit(:name, :email)
+        params.require(:user).permit(:username)
     end
 end
